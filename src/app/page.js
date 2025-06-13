@@ -1,8 +1,8 @@
-import StatsCards from '@/components/admin/StatsCards'
-import RecentBookings from '@/components/admin/RecentBookings'
-import BarbersAvailability from '@/components/admin/BarbersAvailability'
-import SeatsStatus from '@/components/admin/SeatsStatus'
-import CalendarView from '@/components/admin/CalendarView'
+import StatsCards from "@/components/admin/StatsCards";
+import RecentBookings from "@/components/admin/RecentBookings";
+import BarbersAvailability from "@/components/admin/BarbersAvailability";
+import SeatsStatus from "@/components/admin/SeatsStatus";
+// import CalendarView from '@/components/admin/CalendarView'
 
 export default function AdminDashboard() {
   return (
@@ -17,16 +17,16 @@ export default function AdminDashboard() {
       </div>
 
       <StatsCards />
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow">
-          <CalendarView />
+          {/* <CalendarView /> */}
         </div>
         <div className="bg-white p-6 rounded-xl shadow">
           <BarbersAvailability />
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl shadow">
           <RecentBookings />
@@ -36,5 +36,5 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
