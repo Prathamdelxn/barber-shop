@@ -29,6 +29,8 @@ export default function CustomersPage() {
     return () => clearTimeout(timer)
   }, [])
 
+
+ 
   const addCustomer = () => {
     if (newCustomer.name && newCustomer.email && newCustomer.phone) {
       if (editingId) {

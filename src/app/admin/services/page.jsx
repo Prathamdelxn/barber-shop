@@ -337,7 +337,7 @@ export default function ServicesPage() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
-  const categories = ['Haircut', 'Beard', 'Package', 'Coloring', 'Treatment']
+  const categories = ['Hair Cut', 'Beard', 'Package', ' Hair Coloring', 'Skin Care']
   // const durations = ['15', '30', '45', '60', '90', '120']
 
   // Fetch services from API
@@ -421,7 +421,7 @@ export default function ServicesPage() {
       setNewService({ 
         name: '', 
         price: '', 
-        category: 'Haircut',
+        category: 'Hair Cut',
     
       })
       setEditingId(null)
