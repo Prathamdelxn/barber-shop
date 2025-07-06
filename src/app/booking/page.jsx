@@ -494,6 +494,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, Phone, MapPin, Scissors, Star, CheckCircle, X, Plus, Minus } from 'lucide-react';
+import Link from 'next/link';
 
 const BarberShopBooking = () => {
   const [selectedBarber, setSelectedBarber] = useState(null);
@@ -939,7 +940,16 @@ const fetchBarber=async()=>{
                 </div>
               </div>
             </div>
-            
+            <Link href="/queue" className=" inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full shadow-lg">
+            <div 
+             
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full shadow-lg"
+            >
+              
+              <span className="font-semibold">
+View Queue              </span>
+            </div>
+            </Link>
             <p className="text-xs md:text-sm text-gray-500 bg-gray-50 p-3 md:p-4 rounded-2xl">
               📍 Thanks for using our service
             </p>
