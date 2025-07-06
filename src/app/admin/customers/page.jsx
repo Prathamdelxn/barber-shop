@@ -6,11 +6,7 @@ import { FiUser, FiMail, FiPhone, FiCalendar, FiEdit2, FiTrash2, FiPlus, FiSearc
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState([
-    { id: 1, name: 'John Smith', email: 'john@example.com', phone: '+1234567890', joinDate: '2023-01-15', visits: 12, lastVisit: '2023-05-20' },
-    { id: 2, name: 'Michael Johnson', email: 'michael@example.com', phone: '+1234567891', joinDate: '2022-11-05', visits: 8, lastVisit: '2023-04-15' },
-    { id: 3, name: 'Robert Williams', email: 'robert@example.com', phone: '+1234567892', joinDate: '2023-02-28', visits: 5, lastVisit: '2023-05-10' },
-    { id: 4, name: 'David Brown', email: 'david@example.com', phone: '+1234567893', joinDate: '2022-09-12', visits: 18, lastVisit: '2023-05-18' },
-    { id: 5, name: 'James Wilson', email: 'james@example.com', phone: '+1234567894', joinDate: '2023-03-22', visits: 3, lastVisit: '2023-05-05' },
+
   ])
 
   const [newCustomer, setNewCustomer] = useState({ 
@@ -30,7 +26,20 @@ export default function CustomersPage() {
   }, [])
 
 
- 
+ const fetchUsers=async()=>{
+  const res= await fetch("/api/appointment/fetchAll");
+  const data = await res.json();
+  console.log("dasf",data.data)
+const completedAppointments = data.data.filter(
+    (appointment) => appointment.status === "completed"
+  );
+
+  console.log("Completed Appointments:", completedAppointments);
+  setCustomers(completedAppointments);
+ }
+ useEffect(()=>{
+fetchUsers();
+ },[])
   const addCustomer = () => {
     if (newCustomer.name && newCustomer.email && newCustomer.phone) {
       if (editingId) {
@@ -77,15 +86,20 @@ export default function CustomersPage() {
     const options = { year: 'numeric', month: 'short', day: 'numeric' }
     return new Date(dateString).toLocaleDateString('en-US', options)
   }
-
-  const filteredCustomers = customers.filter(customer =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+const totalRevenue = customers.reduce((sum, customer) => sum + (customer.totalPrice || 0), 0);
+ const filteredCustomers = customers.filter(customer => {
+  // Safely handle cases where customer.customer might be undefined
+  const customerData = customer.customer || {};
+  
+  return (
+    (customerData.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (customerData.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (customer.phone?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+  );
+});
 
   const getInitials = (name) => {
-    return name.split(' ').map(n => n[0]).join('')
+    return name?.split(' ').map(n => n[0]).join('')
   }
 
   const getRandomColor = (id) => {
@@ -127,19 +141,7 @@ export default function CustomersPage() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
               />
             </div>
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setNewCustomer({ name: '', email: '', phone: '' })
-                setEditingId(null)
-                setShowAddForm(true)
-              }}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-lg font-medium shadow hover:shadow-md transition-all"
-            >
-              <FiPlus className="w-4 h-4" />
-              <span>Add Customer</span>
-            </motion.button>
+           
           </div>
         </motion.div>
 
@@ -157,33 +159,17 @@ export default function CustomersPage() {
             <p className="text-2xl font-bold text-blue-600">{customers.length}</p>
             <p className="text-blue-500 text-sm">Total Customers</p>
           </motion.div>
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
-          >
-            <p className="text-2xl font-bold text-green-600">
-              {customers.filter(c => c.visits > 0).length}
-            </p>
-            <p className="text-green-500 text-sm">Active Customers</p>
-          </motion.div>
+          
           <motion.div 
             whileHover={{ scale: 1.02 }}
             className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
           >
             <p className="text-2xl font-bold text-purple-600">
-              {Math.round(customers.reduce((sum, c) => sum + c.visits, 0) / customers.length) || 0}
+              ₹ {totalRevenue || 'Loading'}
             </p>
-            <p className="text-purple-500 text-sm">Avg Visits</p>
+            <p className="text-purple-500 text-sm">Total Price</p>
           </motion.div>
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
-          >
-            <p className="text-2xl font-bold text-amber-600">
-              {formatDate(customers.sort((a, b) => new Date(b.lastVisit) - new Date(a.lastVisit))[0]?.lastVisit)}
-            </p>
-            <p className="text-amber-500 text-sm">Last Visit</p>
-          </motion.div>
+          
         </motion.div>
 
         {/* Add/Edit Customer Form */}
@@ -244,14 +230,7 @@ export default function CustomersPage() {
                   >
                     Cancel
                   </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={addCustomer}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md"
-                  >
-                    {editingId ? 'Update' : 'Add Customer'}
-                  </motion.button>
+                 
                 </div>
               </div>
             </motion.div>
@@ -279,17 +258,17 @@ export default function CustomersPage() {
                   <tr>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member Since</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visits</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Visit</th>
-                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visit Date</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Barber</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    {/* <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th> */}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   <AnimatePresence>
                     {filteredCustomers.map((customer) => (
                       <motion.tr
-                        key={customer.id}
+                        key={customer._id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -299,48 +278,30 @@ export default function CustomersPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center ${getRandomColor(customer.id)}`}>
-                              {getInitials(customer.name)}
+                              {getInitials(customer.customer?.name)}
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                              <div className="text-sm font-medium text-gray-900">{customer.customer.name}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{customer.email}</div>
-                          <div className="text-sm text-gray-500">{customer.phone}</div>
+                          <div className="text-sm text-gray-900">{customer.customer.phone}</div>
+                          {/* <div className="text-sm text-gray-500">{customer.customer.phone}</div> */}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(customer.joinDate)}
+                          {formatDate(customer.date)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            customer.visits > 10 ? 'bg-green-100 text-green-800' :
-                            customer.visits > 5 ? 'bg-blue-100 text-blue-800' :
-                            'bg-gray-100 text-gray-800'
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800
                           }`}>
-                            {customer.visits} {customer.visits === 1 ? 'visit' : 'visits'}
+                            {customer.barber} 
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(customer.lastVisit)}
+                        <td className="px-6 py-4 whitespace-nowrap font-medium text-sm text-gray-800">
+                        ₹  {customer.totalPrice}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end space-x-2">
-                            <button
-                              onClick={() => editCustomer(customer)}
-                              className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-                            >
-                              <FiEdit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => deleteCustomer(customer.id)}
-                              className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
+                      
                       </motion.tr>
                     ))}
                   </AnimatePresence>
@@ -361,21 +322,7 @@ export default function CustomersPage() {
                 <p className="text-gray-600 mb-4">
                   {searchTerm ? 'Try a different search term' : 'Add your first customer to get started'}
                 </p>
-                {!searchTerm && (
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setNewCustomer({ name: '', email: '', phone: '' })
-                      setEditingId(null)
-                      setShowAddForm(true)
-                    }}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
-                  >
-                    <FiPlus className="inline mr-1.5" />
-                    Add Customer
-                  </motion.button>
-                )}
+               
               </motion.div>
             )}
           </div>

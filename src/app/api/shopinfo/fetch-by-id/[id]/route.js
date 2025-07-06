@@ -9,14 +9,14 @@ export async function GET(req, { params }) {
   await dbConnect();
 
   const { id } = params;
-
+console.log(id)
   try {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
     }
 
-    const shop = await Shop.findById(id);
-
+    const shop = await Shop.find({userId:id});
+console.log(shop)
     if (!shop) {
       return NextResponse.json({ message: 'Shop not found' }, { status: 404 });
     }

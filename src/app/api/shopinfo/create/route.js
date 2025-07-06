@@ -6,7 +6,8 @@ export async function POST(req) {
   await dbConnect();
 
   try {
-    const body = await req.json(); // Get request body
+    const body = await req.json();
+    console.log(body); // Get request body
 console.log(body);
     const newShop = await Shop.create(body); // Create the service
 

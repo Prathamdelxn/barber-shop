@@ -1,10 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { model } from 'mongoose';
 
 const shopSchema = new mongoose.Schema({
   shopName: { type: String },
   shopLogo: { type: String },
   contactPhone:{type:String},
   contactEmail:{type:String},
+  userId:{type:String},
   socialMedia: [
     {
       platform: { type: String },
@@ -44,5 +45,7 @@ const shopSchema = new mongoose.Schema({
     },
   },
 }, { timestamps: true });
+
+delete mongoose.models.Shop
 
 export default mongoose.models.Shop || mongoose.model('Shop', shopSchema);

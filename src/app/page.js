@@ -1081,10 +1081,12 @@ import {
   Scissors, Shave, Razor, Comb, Brush, Mirror, Spray, HotTowel, 
   Star, Phone, MapPin, Clock, Award, Users, Calendar, ChevronRight, Instagram, Facebook, Twitter, Youtube
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
 export default function BarberShopLandingPage() {
+  const router=useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -1320,9 +1322,12 @@ const HotTowel = ({ className }) => (
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={()=>{ router.push("/auth")}
+             
+            }
             className="hidden md:block bg-gradient-to-r from-amber-600 to-amber-500 px-6 py-2 rounded-full text-white transition-all shadow-lg hover:shadow-amber-200/50"
           >
-            Book Now
+            Login Here
           </motion.button>
         </div>
         
@@ -1760,7 +1765,7 @@ const HotTowel = ({ className }) => (
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-white relative overflow-hidden">
+      {/* <section id="contact" className="py-20 bg-white relative overflow-hidden">
         <div className="container mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -1902,7 +1907,7 @@ const HotTowel = ({ className }) => (
             </motion.div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="bg-amber-900 text-amber-100 py-16 relative overflow-hidden">

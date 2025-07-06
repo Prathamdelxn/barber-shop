@@ -1,6 +1,4 @@
 
-
-
 'use client'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -227,53 +225,17 @@ export default function BookingsPage() {
   const toggleExpandBooking = (bookingId) => {
     setExpandedBooking(expandedBooking === bookingId ? null : bookingId)
   }
-const [allServices,setServices]=useState([ { name: 'Haircut', totalPrice: 25 },
+
+  const allServices = [
+    { name: 'Haircut', totalPrice: 25 },
     { name: 'Beard Trim', totalPrice: 15 },
     { name: 'Hair Coloring', totalPrice: 40 },
     { name: 'Hair Washing', totalPrice: 10 },
     { name: 'Styling', totalPrice: 20 },
-    { name: 'Head Massage', totalPrice: 15 }]);
-
-  const[staffMembers,setBarber]=useState(['John Doe', 'Mike Smith', 'David Johnson', 'Carlos Rodriguez']);
-
- useEffect(() => {
-  const fetchServices = async () => {
-    try {
-      const response = await fetch('/api/services/fetchAll');
-      if (!response.ok) {
-        throw new Error('Failed to fetch services');
-      }
-
-      const data = await response.json();
-      console.log(data);
-      setServices(data.services);
-    } catch (err) {
-      console.error('Internal Server Error', err);
-    }
-  };
-  const fetchBarber=async()=>{
-    try{
-
-        const res = await fetch("/api/staff/fetchAll")
-        const data =await res.json();
-
-        console.log(data);
-        setBarber(data.staff)
-        
-
-    }
-    catch(err){
-
-        console.log("Internal Server Error",err)
-
-    }
-}
-
-  fetchServices();
-  fetchBarber();
-}, []);
-
- 
+    { name: 'Head Massage', totalPrice: 15 }
+  ]
+  
+  const staffMembers = ['John Doe', 'Mike Smith', 'David Johnson', 'Carlos Rodriguez']
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800)
@@ -307,37 +269,11 @@ const [allServices,setServices]=useState([ { name: 'Haircut', totalPrice: 25 },
   const calculatePrice = (services) => {
     return services.reduce((total, serviceName) => {
       const service = allServices.find(s => s.name === serviceName)
-      return total + (service?.price || 0)
+      return total + (service?.totalPrice || 0)
     }, 0)
   }
 
-  const addBooking = async() => {
-     console.log("Form Data to be Submitted:", {
-    customer: newBooking.customer,
-    services: newBooking.services,
-    barber: newBooking.barber,
-    date: newBooking.date,
-    time: newBooking.time,
-    totalPrice: newBooking.totalPrice
-  });
-  const bookedData={ customer: newBooking.customer,
-    services: newBooking.services,
-    barber: newBooking.barber,
-    date: newBooking.date,
-    time: newBooking.time,
-    totalPrice: newBooking.totalPrice}
-  try{
-     const response = await fetch('/api/appointment/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookedData)
-        });
-        console.log(response)
-
-  }catch(err){
-    console.log("Internal Server Error",err)
-
-  }
+  const addBooking = () => {
     if (newBooking.customer.name && newBooking.services.length > 0 && newBooking.barber && newBooking.date && newBooking.time) {
       setBookings([...bookings, { 
         id: bookings.length + 1, 
@@ -376,22 +312,21 @@ const [allServices,setServices]=useState([ { name: 'Haircut', totalPrice: 25 },
 
   const updateBookingStatus = async (bookingId, newStatus) => {
     try {
-      console.log(bookingId);
       // In a real app, you would call your API here
-      const response = await fetch('/api/appointment/update-status', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          appointmentId: bookingId,
-          status: newStatus,
-        }),
-      })
+      // const response = await fetch('/api/appointment/update-status', {
+      //   method: 'PATCH',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     appointmentId: bookingId,
+      //     status: newStatus,
+      //   }),
+      // })
 
       // For demo purposes, we'll update the local state directly
       setBookings(bookings.map(booking => 
-        booking._id === bookingId ? { ...booking, status: newStatus } : booking
+        booking.id === bookingId ? { ...booking, status: newStatus } : booking
       ))
     } catch (error) {
       console.error("Error updating booking status:", error)
@@ -644,7 +579,7 @@ const [allServices,setServices]=useState([ { name: 'Haircut', totalPrice: 25 },
                               : 'bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200'
                           }`}
                         >
-                          {service.name} (₹{service.price})
+                          {service.name} (₹{service.totalPrice})
                         </button>
                       )
                     })}
@@ -663,8 +598,8 @@ const [allServices,setServices]=useState([ { name: 'Haircut', totalPrice: 25 },
                     className="w-full border border-gray-300 rounded-lg px-3 py-1 sm:px-4 sm:py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                   >
                     <option value="">Select Staff</option>
-                    {staffMembers.map((staff,index) => (
-                      <option key={index} value={staff.name}>{staff.name}</option>
+                    {staffMembers.map(staff => (
+                      <option key={staff} value={staff}>{staff}</option>
                     ))}
                   </select>
                 </div>
@@ -831,7 +766,7 @@ const [allServices,setServices]=useState([ { name: 'Haircut', totalPrice: 25 },
                           <td className="px-3 sm:px-6 py-4">
                             <select
                               value={booking.status}
-                              onChange={(e) => updateBookingStatus(booking._id, e.target.value)}
+                              onChange={(e) => updateBookingStatus(booking.id, e.target.value)}
                               className={`text-xs rounded-lg px-2 py-1 sm:px-3 sm:py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${getStatusColor(booking.status)}`}
                             >
                               <option value="pending">Pending</option>
